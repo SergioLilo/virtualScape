@@ -12,8 +12,13 @@ public class SalaService {
     private SalaRepository salaRepository;
 
     public void insertarSala(Sala s){
-    salaRepository.save(s);
+
+        if (s.getCapacidadMax()<30){
+        salaRepository.save(s);
         System.out.println("Sala insertada correctamente");
+        }else {
+            System.out.println("El sistema tiene un aforo limitado a 30 personas.");
+        }
     }
 
     public Sala buscaPorNombre(String nombre){
