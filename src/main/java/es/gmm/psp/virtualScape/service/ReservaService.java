@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservaService {
@@ -59,6 +60,16 @@ public class ReservaService {
 
        List<Reserva> reservas= reservaRepository.findByNombreSala(nombre);
         return reservas;
+    }
+
+    public List<Reserva>  findAll(){
+
+    return reservaRepository.findAll();
+    }
+
+    public Reserva encontrarPorId(String id){
+
+        return reservaRepository.getById(id);
     }
 
 }

@@ -1,11 +1,14 @@
 package es.gmm.psp.virtualScape.Model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "reservas")
 public class Reserva {
 
 
+    @Id
+    private String id;
     private String nombreSala;
     private  Fecha fecha;
     private  Contacto contacto;
@@ -15,6 +18,9 @@ public class Reserva {
         this.nombreSala = nombreSala;
         this.fecha = fecha;
         this.contacto = contacto;
+    }
+
+    public Reserva() {
     }
 
     public String getNombreSala() {

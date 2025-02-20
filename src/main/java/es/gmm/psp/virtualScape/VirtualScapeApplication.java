@@ -1,21 +1,14 @@
 package es.gmm.psp.virtualScape;
 
 
-import es.gmm.psp.virtualScape.Model.Contacto;
-import es.gmm.psp.virtualScape.Model.Fecha;
 import es.gmm.psp.virtualScape.Model.Reserva;
-import es.gmm.psp.virtualScape.Model.Sala;
 import es.gmm.psp.virtualScape.service.ReservaService;
 import es.gmm.psp.virtualScape.service.SalaService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import com.mongodb.client.*;
-import org.bson.Document;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static com.mongodb.client.model.Filters.*;
+import java.util.Optional;
 
 @SpringBootApplication
 public class VirtualScapeApplication {
@@ -28,6 +21,10 @@ public class VirtualScapeApplication {
 		ReservaService reservaService = context.getBean(ReservaService.class);
 		SalaService salaService=context.getBean(SalaService.class);
 
+		List<Reserva> reservas=reservaService.findAll();
+		System.out.println(reservas);
+		Reserva r=reservaService.encontrarPorId("67b484fd1e8726427b3b727e");
+		System.out.println(r);
 		/*
 		List<String> tematicas=new ArrayList<>();
 		tematicas.add("Terror");
@@ -36,16 +33,16 @@ public class VirtualScapeApplication {
 		salaService.insertarSala(sala);*/
 
 
+		/*
 		Fecha fecha1=new Fecha(20,12);
 		Contacto contacto1=new Contacto("Sergio2",6677,5);
 		Reserva reserva=new Reserva("La Casa del Terro",fecha1,contacto1);
 		reservaService.insertarReserva(reserva);
+*/
 
 		/*Sala s=salaService.buscaPorNombre("La Casa del Terro");
 		System.out.println(s);*/
 	}
-	public void insert(ReservaService reservaService){
 
-	}
 
 }

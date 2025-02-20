@@ -11,6 +11,9 @@ public class Fecha {
         this.horaReserva = horaReserva;
     }
 
+    public Fecha() {
+    }
+
     public int getDiaReserva() {
         return diaReserva;
     }
@@ -25,5 +28,13 @@ public class Fecha {
 
     public void setHoraReserva(int horaReserva) {
         this.horaReserva = horaReserva;
+    }
+
+    @Override
+    public String toString() {
+        return "Fecha{" +
+                "diaReserva=" + diaReserva +
+                ", horaReserva=" + horaReserva +
+                '}';
     }
 }

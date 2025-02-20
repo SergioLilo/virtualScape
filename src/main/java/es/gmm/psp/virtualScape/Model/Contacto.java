@@ -12,6 +12,9 @@ public class Contacto {
         this.jugadores = jugadores;
     }
 
+    public Contacto() {
+    }
+
     public String getTitular() {
         return titular;
     }
@@ -34,5 +37,14 @@ public class Contacto {
 
     public void setJugadores(int jugadores) {
         this.jugadores = jugadores;
+    }
+
+    @Override
+    public String toString() {
+        return "Contacto{" +
+                "titular='" + titular + '\'' +
+                ", telefono=" + telefono +
+                ", jugadores=" + jugadores +
+                '}';
     }
 }
