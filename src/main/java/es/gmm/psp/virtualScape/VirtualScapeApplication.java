@@ -8,7 +8,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.List;
-import java.util.Optional;
 
 @SpringBootApplication
 public class VirtualScapeApplication {
@@ -23,7 +22,7 @@ public class VirtualScapeApplication {
 
 		List<Reserva> reservas=reservaService.findAll();
 		System.out.println(reservas);
-		Reserva r=reservaService.encontrarPorId("67b484fd1e8726427b3b727e");
+		Reserva r=reservaService.findById("67b484fd1e8726427b3b727e");
 		System.out.println(r);
 		/*
 		List<String> tematicas=new ArrayList<>();
