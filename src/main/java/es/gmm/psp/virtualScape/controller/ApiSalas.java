@@ -81,6 +81,7 @@ public class ApiSalas {
                 .body(new ApiRespuesta(true, "Sala creada con éxito", nuevaSala.getId()));
     }
      /*
+     //
     // GET reservas/id
     @Operation(summary = "Obtener detalles de una reserva", description = "Devuelve los detalles de una reserva específica dado su identificador")
     @ApiResponses(value = {
