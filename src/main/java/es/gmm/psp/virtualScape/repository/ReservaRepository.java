@@ -1,6 +1,6 @@
 package es.gmm.psp.virtualScape.repository;
 
-import es.gmm.psp.virtualScape.Model.Reserva;
+import es.gmm.psp.virtualScape.model.Reserva;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

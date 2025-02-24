@@ -1,4 +1,4 @@
-package es.gmm.psp.virtualScape.Model;
+package es.gmm.psp.virtualScape.model;
 
 public class ApiRespuesta {
 

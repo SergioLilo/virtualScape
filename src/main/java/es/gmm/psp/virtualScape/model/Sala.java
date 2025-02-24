@@ -1,4 +1,4 @@
-package es.gmm.psp.virtualScape.Model;
+package es.gmm.psp.virtualScape.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,6 +7,7 @@ import java.util.List;
 @Document(collection = "salas")
 public class Sala {
 
+    String id;
     String nombre;
     int capacidadMin;
     int capacidadMax;
@@ -19,6 +20,14 @@ public class Sala {
         this.tematicas = tematicas;
     }
 
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getNombre() {
         return nombre;

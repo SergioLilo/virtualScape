@@ -1,7 +1,7 @@
 package es.gmm.psp.virtualScape;
 
 
-import es.gmm.psp.virtualScape.Model.Reserva;
+import es.gmm.psp.virtualScape.model.Reserva;
 import es.gmm.psp.virtualScape.service.ReservaService;
 import es.gmm.psp.virtualScape.service.SalaService;
 import org.springframework.boot.SpringApplication;

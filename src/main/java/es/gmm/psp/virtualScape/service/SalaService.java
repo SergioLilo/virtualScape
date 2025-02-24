@@ -1,9 +1,12 @@
 package es.gmm.psp.virtualScape.service;
 
-import es.gmm.psp.virtualScape.Model.Sala;
+import es.gmm.psp.virtualScape.model.Reserva;
+import es.gmm.psp.virtualScape.model.Sala;
 import es.gmm.psp.virtualScape.repository.SalaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class SalaService {
@@ -26,5 +29,11 @@ public class SalaService {
         Sala sala=salaRepository.findByNombre(nombre);
         return sala;
     }
+
+    public List<Sala> findAll(){
+        return salaRepository.findAll();
+    }
+    public Sala save(Sala sala) { return  salaRepository.save(sala);}
+
 
 }
