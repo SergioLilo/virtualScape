@@ -34,6 +34,9 @@ public class SalaService {
         return salaRepository.findAll();
     }
     public Sala save(Sala sala) { return  salaRepository.save(sala);}
+    public Sala findById(String id){
+        return salaRepository.findById(id).orElse(null);
+    }
 
 
 }

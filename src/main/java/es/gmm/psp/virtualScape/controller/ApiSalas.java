@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/virtual-escape/salas")
@@ -79,6 +80,46 @@ public class ApiSalas {
         Sala nuevaSala = salaService.save(sala);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRespuesta(true, "Sala creada con éxito", nuevaSala.getId()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getSalaById(@PathVariable String id) {
+
+        Sala sala=salaService.findById(id);
+
+        if (sala != null) {
+            return ResponseEntity.ok(sala);
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiRespuesta(false, "Reserva no encontrada", null));}
+
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiRespuesta> updateSala(@PathVariable String id, @Valid @RequestBody Sala salaActualizada) {
+        // Verificar si la sala existe
+        Sala salaExistente = salaService.findById(id);
+        if (salaExistente == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiRespuesta(false, "Sala no encontrada", null));
+        }
+
+        // Validar datos de la sala
+        if (salaActualizada.getCapacidadMax() > 30) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiRespuesta(false, "Capacidad no válida (máx. 30)", null));
+        }
+
+        salaActualizada.setId(id);
+        salaService.save(salaActualizada);
+
+        // Confirmar la actualización con un GET
+        Sala salaVerificada = salaService.findById(id);
+        if (salaVerificada!=null && salaVerificada.equals(salaActualizada)) {
+            return ResponseEntity.ok(new ApiRespuesta(true, "Sala actualizada correctamente", id));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiRespuesta(false, "Error verificando la actualización", null));
+        }
     }
      /*
      //
