@@ -14,10 +14,11 @@ public class Reserva {
     private  Contacto contacto;
     private int jugadores;
 
-    public Reserva(String nombreSala, Fecha fecha, Contacto contacto) {
+    public Reserva(String nombreSala, Fecha fecha, Contacto contacto,int jugadores) {
         this.nombreSala = nombreSala;
         this.fecha = fecha;
         this.contacto = contacto;
+        this.jugadores=jugadores;
     }
 
     public Reserva() {

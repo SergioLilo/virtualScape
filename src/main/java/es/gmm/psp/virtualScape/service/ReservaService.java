@@ -24,8 +24,8 @@ public class ReservaService {
         Sala sala=salaRepository.findByNombre(reserva.getNombreSala());
 
         if (sala!=null){
-            if (reserva.getContacto().getJugadores() >= sala.getCapacidadMin()
-                    && reserva.getContacto().getJugadores() <= sala.getCapacidadMax()){
+            if (reserva.getJugadores() >= sala.getCapacidadMin()
+                    && reserva.getJugadores() <= sala.getCapacidadMax()){
 
                 List<Reserva> reservas=buscarPorNombre(reserva.getNombreSala());
 
@@ -92,6 +92,10 @@ public class ReservaService {
     }
     public void eliminarReserva(String id){
         reservaRepository.deleteById(id);
+    }
+
+    public List<Reserva> findByDia(int numDia) {
+        return reservaRepository.findByFechaDiaReserva(numDia);
     }
 }
 

@@ -121,40 +121,5 @@ public class ApiSalas {
                     .body(new ApiRespuesta(false, "Error verificando la actualización", null));
         }
     }
-     /*
-     //
-    // GET reservas/id
-    @Operation(summary = "Obtener detalles de una reserva", description = "Devuelve los detalles de una reserva específica dado su identificador")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Reserva encontrada",
-                    content = @Content(
-                            schema = @Schema(
-                                    example = "{\"id\": \"1\", \"nombreSala\": \"Sala A\", \"fecha\": \"2025-02-20T10:00:00\", \"horaInicio\": \"10:00\", \"horaFin\": \"12:00\"}"
-                            )
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Reserva no encontrada",
-                    content = @Content(
-                            schema = @Schema(
-                                    example = "{\"exito\": false, \"mensajeError\": \"Reserva no encontrada\", \"idGenerado\": null}"
-                            )
-                    )
-            )
-
-    })
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getReservaById(@PathVariable String id) {
-      //  Reserva reserva = reservaService.findById(id);
-        if (reserva != null) {
-            return ResponseEntity.ok(reserva);
-        }else{
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiRespuesta(false, "Reserva no encontrada", null));}
-    }*/
 
 }
