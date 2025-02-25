@@ -70,11 +70,33 @@ public class ApiSalas {
             )
     })
     @PostMapping
-    public ResponseEntity<ApiRespuesta> crearSala(@Valid @RequestBody Sala sala) {
+    public ResponseEntity<ApiRespuesta> crearSala(@RequestParam String nombre,
+                                                  @RequestParam int capacidadMin,
+                                                  @RequestParam int capacidadMax,
+                                                  @RequestParam List<String> tematicas,
+            @Valid @RequestBody Sala sala) {
 
-        if (sala.getCapacidadMax()>30) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ApiRespuesta(false, "Capacidad de sala incorrecta", null));
+        sala.setId(null);
+        if (capacidadMin < 1 || capacidadMax > 8) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiRespuesta(false, "El número de jugadores debe ser entre 1 y 8", null));
+        }
+        int totalJugadores = salaService.getTotalJugadores();
+        if (totalJugadores + capacidadMax > 30) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiRespuesta( false, "El número total de jugadores no puede superar los 30", null));
+        }
+        sala.setId(null);
+        sala.setNombre(nombre);
+        sala.setCapacidadMin(capacidadMin);
+        sala.setCapacidadMax(capacidadMax);
+        sala.setTematicas(tematicas);
+
+        Sala salaExistente = salaService.buscaPorNombre(sala.getNombre());
+
+        if (salaExistente != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiRespuesta(false, "Ya existe una sala con ese nombre", null));
         }
 
         Sala nuevaSala = salaService.save(sala);
@@ -103,7 +125,6 @@ public class ApiSalas {
                     .body(new ApiRespuesta(false, "Sala no encontrada", null));
         }
 
-        // Validar datos de la sala
         if (salaActualizada.getCapacidadMax() > 30) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiRespuesta(false, "Capacidad no válida (máx. 30)", null));
@@ -112,7 +133,6 @@ public class ApiSalas {
         salaActualizada.setId(id);
         salaService.save(salaActualizada);
 
-        // Confirmar la actualización con un GET
         Sala salaVerificada = salaService.findById(id);
         if (salaVerificada!=null && salaVerificada.equals(salaActualizada)) {
             return ResponseEntity.ok(new ApiRespuesta(true, "Sala actualizada correctamente", id));

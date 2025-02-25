@@ -74,13 +74,20 @@ public class ReservaService {
     }
 
     public boolean verificarConflicto(Reserva reserva){
-        List<Reserva> reservas = findAll();
-        for(Reserva r : reservas){
-            if(r.getFecha().getDiaReserva() == reserva.getFecha().getDiaReserva() &&
-                    r.getFecha().getHoraReserva() == reserva.getFecha().getHoraReserva()){
-                return true;
-            }
+        Sala sala=salaRepository.findByNombre(reserva.getNombreSala());
+        System.out.println(sala);
+        if (sala==null) {
+        return true;
         }
+            List<Reserva> reservas = findAll();
+            for (Reserva r : reservas) {
+                if (r.getFecha().getDiaReserva() == reserva.getFecha().getDiaReserva() &&
+                        r.getFecha().getHoraReserva() == reserva.getFecha().getHoraReserva()) {
+                    return true;
+                }
+            }
+
+
         return false;
     }
     public Reserva actualizarReserva(Reserva reserva) {

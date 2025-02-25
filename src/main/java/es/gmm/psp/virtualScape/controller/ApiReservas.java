@@ -1,8 +1,8 @@
 package es.gmm.psp.virtualScape.controller;
 
-import es.gmm.psp.virtualScape.model.ApiRespuesta;
-import es.gmm.psp.virtualScape.model.Reserva;
+import es.gmm.psp.virtualScape.model.*;
 import es.gmm.psp.virtualScape.service.ReservaService;
+import es.gmm.psp.virtualScape.service.SalaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,7 +22,8 @@ public class ApiReservas {
 
     @Autowired
     private ReservaService reservaService;
-
+    @Autowired
+    private SalaService salaService;
     @Operation(summary = "Obtener todas las reservas", description = "Devuelve una lista de todas las reservas")
     @ApiResponses(value = {
             @ApiResponse(
@@ -101,14 +102,34 @@ public class ApiReservas {
             )
     })
     @PostMapping
-    public ResponseEntity<ApiRespuesta> crearReserva(@Valid @RequestBody Reserva reserva) {
+    public ResponseEntity<ApiRespuesta> crearReserva(@RequestParam String nombreSala,
+                                                     @RequestParam int diaReserva,
+                                                     @RequestParam int horaReserva,
+                                                     @RequestParam String titular,
+                                                     @RequestParam int telefono,
+                                                     @RequestParam int jugadores,
+                                                     @Valid @RequestBody Reserva reserva) {
+        reserva.setId(null);
         boolean comprobacion = reservaService.verificarConflicto(reserva);
         if (comprobacion) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ApiRespuesta(false, "Conflicto de horarios con otra reserva", null));
+                    .body(new ApiRespuesta(false, "Conflicto de horarios con otra reserva o la sala no existe", null));
+        }
+        Sala sala = salaService.buscaPorNombre(nombreSala);
+        if (jugadores > sala.getCapacidadMax()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiRespuesta(false, "El número de jugadores excede la capacidad máxima de la sala", null));
         }
 
-        Reserva nuevaReserva = reservaService.save(reserva);
+        if (jugadores < sala.getCapacidadMin()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiRespuesta(false, "El número de jugadores no supera la capacidad mínima de la sala", null));
+        }
+        Reserva nuevaReserva = new Reserva(nombreSala,
+                new Fecha(diaReserva, horaReserva),
+                new Contacto(titular, telefono),
+                jugadores);
+         reservaService.save(nuevaReserva);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRespuesta(true, "Reserva creada con éxito", nuevaReserva.getId()));
     }
@@ -153,21 +174,39 @@ public class ApiReservas {
             )
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ApiRespuesta> actualizarReserva(@PathVariable String id, @Valid @RequestBody Reserva reserva) {
+    public ResponseEntity<ApiRespuesta> actualizarReserva(@PathVariable String id,
+                                                          @RequestParam String nombreSala,
+                                                          @RequestParam int diaReserva,
+                                                          @RequestParam int horaReserva,
+                                                          @RequestParam String titular,
+                                                          @RequestParam int telefono,
+                                                          @RequestParam int jugadores, @Valid @RequestBody Reserva reserva) {
         Reserva reservaExistente = reservaService.findById(id);
         if (reservaExistente == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ApiRespuesta(false, "Reserva no encontrada", null));
         }
 
-        reserva.setId(id); // Asegurar que se usa el ID correcto
+        Sala salaExistente = salaService.buscaPorNombre(nombreSala);
+        if (salaExistente == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiRespuesta(false, "La sala especificada no existe", null));
+        }
+
+        reserva.setId(id);
+        reserva.setNombreSala(nombreSala);
+        reserva.setFecha(new Fecha(diaReserva, horaReserva));
+        reserva.setContacto(new Contacto(titular, telefono));
+        reserva.setJugadores(jugadores);
         boolean hayConflicto = reservaService.verificarConflicto(reserva);
         if (hayConflicto) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ApiRespuesta(false, "Conflicto de horarios con otra reserva", null));
         }
 
+
         try {
+
             Reserva reservaActualizada = reservaService.actualizarReserva(reserva);
             Reserva verificacion = reservaService.findById(reservaActualizada.getId());
             if (verificacion == null) {

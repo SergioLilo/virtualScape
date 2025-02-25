@@ -1,6 +1,5 @@
 package es.gmm.psp.virtualScape.service;
 
-import es.gmm.psp.virtualScape.model.Reserva;
 import es.gmm.psp.virtualScape.model.Sala;
 import es.gmm.psp.virtualScape.repository.SalaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,14 @@ public class SalaService {
         return sala;
     }
 
+    public int getTotalJugadores() {
+        List<Sala> salas = salaRepository.findAll();
+        int totalJugadores = 0;
+        for (Sala sala : salas) {
+            totalJugadores += sala.getCapacidadMax();
+        }
+        return totalJugadores;
+    }
     public List<Sala> findAll(){
         return salaRepository.findAll();
     }
@@ -39,4 +46,10 @@ public class SalaService {
     }
 
 
+    public List<Sala> findByTematica(String nombreTematica) {
+        return salaRepository.findByTematicas(nombreTematica);
+    }
+    public List<Sala> top2SalasConMasReservas() {
+        return salaRepository.findTop2ByOrderByReservaAsc();
+    }
 }

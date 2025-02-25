@@ -1,12 +1,16 @@
 package es.gmm.psp.virtualScape;
 
 
+import es.gmm.psp.virtualScape.model.Contacto;
+import es.gmm.psp.virtualScape.model.Fecha;
 import es.gmm.psp.virtualScape.model.Reserva;
+import es.gmm.psp.virtualScape.model.Sala;
 import es.gmm.psp.virtualScape.service.ReservaService;
 import es.gmm.psp.virtualScape.service.SalaService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
@@ -32,12 +36,12 @@ public class VirtualScapeApplication {
 		salaService.insertarSala(sala);*/
 
 
-		/*
-		Fecha fecha1=new Fecha(20,12);
-		Contacto contacto1=new Contacto("Sergio2",6677,5);
-		Reserva reserva=new Reserva("La Casa del Terro",fecha1,contacto1);
+
+		Fecha fecha1=new Fecha(20,16);
+		Contacto contacto1=new Contacto("Sergio2",6677);
+		Reserva reserva=new Reserva("La Casa del Terro",fecha1,contacto1,55);
 		reservaService.insertarReserva(reserva);
-*/
+
 
 		/*Sala s=salaService.buscaPorNombre("La Casa del Terro");
 		System.out.println(s);*/

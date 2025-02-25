@@ -1,8 +1,6 @@
 package es.gmm.psp.virtualScape.controller;
 
-import es.gmm.psp.virtualScape.model.ConsultaEspecial;
-import es.gmm.psp.virtualScape.model.Contacto;
-import es.gmm.psp.virtualScape.model.Reserva;
+import es.gmm.psp.virtualScape.model.*;
 import es.gmm.psp.virtualScape.service.ReservaService;
 import es.gmm.psp.virtualScape.service.SalaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/virtual-escape/consultas")
@@ -49,6 +48,32 @@ public class ApiConsultas {
         }
 
         return ResponseEntity.ok(consultaEspecials);
+    }
+    // GET /salas/tematica/{nombreTematica}
+    @Operation(summary = "Consultar salas por temática", description = "Devuelve salas disponibles según la temática buscada")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Salas encontradas"),
+            @ApiResponse(responseCode = "204", description = "No hay salas con esa temática")
+    })
+    @GetMapping("/salas/tematica/{nombreTematica}")
+    public ResponseEntity<List<Sala>> getSalasPorTematica(@PathVariable String nombreTematica) {
+        List<Sala> salas = salaService.findByTematica(nombreTematica);
+
+        if (salas.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        return ResponseEntity.ok(salas);
+    }
+    @GetMapping("/salas/mas-reservadas")
+    public ResponseEntity<List<Sala>> getSalasMasReservadas() {
+        List<Sala> salasMasReservadas = salaService.top2SalasConMasReservas();
+
+        if (salasMasReservadas.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        return ResponseEntity.ok(salasMasReservadas);
     }
 
 }
