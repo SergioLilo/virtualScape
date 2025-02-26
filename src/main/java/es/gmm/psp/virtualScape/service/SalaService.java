@@ -72,7 +72,9 @@ public class SalaService {
     }
 
     public Sala actualizarSala(Sala sala) {
+        log.info("Actualizando salas");
         if (sala == null || sala.getId() == null) {
+            log.error("Sala invalida");
             throw new IllegalArgumentException("Sala inválida");
         }
         return salaRepository.save(sala);
@@ -86,6 +88,7 @@ public class SalaService {
         return salaRepository.findTop2ByOrderByReservaAsc();
     }
     public List<ConsultaMasReservas> obtenerSalasMasReservadas() {
+        log.info("Buscando las 2 salas mas reservadas");
         List<Reserva> reservas = reservaRepository.findAll();
         Map<String, Integer> conteoReservas = new HashMap<>();
 
