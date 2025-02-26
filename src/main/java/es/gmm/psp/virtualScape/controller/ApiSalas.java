@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import java.util.Optional;
 @RequestMapping("api/virtual-escape/salas")
 public class ApiSalas {
 
+    private static final Logger log = LoggerFactory.getLogger(ApiSalas.class);
     @Autowired
     private SalaService salaService;
 
@@ -78,11 +81,13 @@ public class ApiSalas {
 
         sala.setId(null);
         if (capacidadMin < 1 || capacidadMax > 8) {
+            log.error("El número de jugadores debe ser entre 1 y 8");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiRespuesta(false, "El número de jugadores debe ser entre 1 y 8", null));
         }
         int totalJugadores = salaService.getTotalJugadores();
         if (totalJugadores + capacidadMax > 30) {
+            log.error("El número de jugadores debe ser entre 1 y 8");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiRespuesta( false, "El número total de jugadores no puede superar los 30", null));
         }
@@ -95,11 +100,13 @@ public class ApiSalas {
         Sala salaExistente = salaService.buscaPorNombre(sala.getNombre());
 
         if (salaExistente != null) {
+            log.error("Ya existe una sala con ese nombre");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiRespuesta(false, "Ya existe una sala con ese nombre", null));
         }
 
         Sala nuevaSala = salaService.save(sala);
+        log.info("Sala creada con éxito");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRespuesta(true, "Sala creada con éxito", nuevaSala.getId()));
     }
@@ -112,33 +119,59 @@ public class ApiSalas {
         if (sala != null) {
             return ResponseEntity.ok(sala);
         }else{
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiRespuesta(false, "Reserva no encontrada", null));}
+            log.error("no existe la sala con id: "+id);
+            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.NOT_FOUND);}
 
     }
     @PutMapping("/{id}")
-    public ResponseEntity<ApiRespuesta> updateSala(@PathVariable String id, @Valid @RequestBody Sala salaActualizada) {
-        // Verificar si la sala existe
+    public ResponseEntity<ApiRespuesta> actualizarSala(@PathVariable String id,
+                                                    @RequestParam String nombre,
+                                                    @RequestParam int capacidadMin,
+                                                    @RequestParam int capacidadMax,
+                                                    @RequestParam List<String> tematicas,
+                                                    @Valid @RequestBody Sala sala) {
+
         Sala salaExistente = salaService.findById(id);
         if (salaExistente == null) {
+            log.error("Sala no encontrada");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ApiRespuesta(false, "Sala no encontrada", null));
         }
 
-        if (salaActualizada.getCapacidadMax() > 30) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiRespuesta(false, "Capacidad no válida (máx. 30)", null));
+        if (!salaExistente.getNombre().equals(nombre)) {
+            Sala salaConMismoNombre = salaService.buscaPorNombre(nombre);
+            if (salaConMismoNombre != null) {
+                log.error("El nombre de la sala ya está en uso");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ApiRespuesta(false, "El nombre de la sala ya está en uso", null));
+            }
         }
 
-        salaActualizada.setId(id);
-        salaService.save(salaActualizada);
+        int totalJugadoresAntes = salaService.getTotalJugadores() - salaExistente.getCapacidadMax();
+        if (totalJugadoresAntes + capacidadMax > 30) {
+            log.error("El número total de jugadores no puede superar los 30");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiRespuesta(false, "El número total de jugadores no puede superar los 30", null));
+        }
 
-        Sala salaVerificada = salaService.findById(id);
-        if (salaVerificada!=null && salaVerificada.equals(salaActualizada)) {
-            return ResponseEntity.ok(new ApiRespuesta(true, "Sala actualizada correctamente", id));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiRespuesta(false, "Error verificando la actualización", null));
+        salaExistente.setNombre(nombre);
+        salaExistente.setCapacidadMin(capacidadMin);
+        salaExistente.setCapacidadMax(capacidadMax);
+        salaExistente.setTematicas(tematicas);
+
+        try {
+            Sala salaActualizada = salaService.actualizarSala(salaExistente);
+            Sala verificacion = salaService.findById(salaActualizada.getId());
+            if (verificacion == null) {
+                log.error("Error al verificar la actualización");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new ApiRespuesta(false, "Error al verificar la actualización", null));
+            }
+            log.info("Sala actualizada con éxito");
+            return ResponseEntity.ok(new ApiRespuesta(true, "Sala actualizada con éxito", salaActualizada.getId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiRespuesta(false, "Datos inválidos en la petición", null));
         }
     }
 

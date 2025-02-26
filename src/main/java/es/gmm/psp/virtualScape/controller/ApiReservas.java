@@ -66,8 +66,8 @@ public class ApiReservas {
         if (reserva != null) {
             return ResponseEntity.ok(reserva);
         }else{
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ApiRespuesta(false, "Reserva no encontrada", null));}
+        return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.NOT_FOUND);
+        }
     }
     // POST respuestas
     @Operation(summary = "Crear una nueva reserva", description = "Crea una nueva reserva si no hay conflicto de horarios")
@@ -109,8 +109,11 @@ public class ApiReservas {
                                                      @RequestParam int telefono,
                                                      @RequestParam int jugadores,
                                                      @Valid @RequestBody Reserva reserva) {
-        reserva.setId(null);
-        boolean comprobacion = reservaService.verificarConflicto(reserva);
+        Reserva nuevaReserva = new Reserva(nombreSala,
+                new Fecha(diaReserva, horaReserva),
+                new Contacto(titular, telefono),
+                jugadores);
+        boolean comprobacion = reservaService.verificarConflicto(nuevaReserva);
         if (comprobacion) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ApiRespuesta(false, "Conflicto de horarios con otra reserva o la sala no existe", null));
@@ -125,10 +128,7 @@ public class ApiReservas {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiRespuesta(false, "El número de jugadores no supera la capacidad mínima de la sala", null));
         }
-        Reserva nuevaReserva = new Reserva(nombreSala,
-                new Fecha(diaReserva, horaReserva),
-                new Contacto(titular, telefono),
-                jugadores);
+
          reservaService.save(nuevaReserva);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiRespuesta(true, "Reserva creada con éxito", nuevaReserva.getId()));

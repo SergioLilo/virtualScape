@@ -23,24 +23,23 @@ public class VirtualScapeApplication {
 
 		ReservaService reservaService = context.getBean(ReservaService.class);
 		SalaService salaService=context.getBean(SalaService.class);
-
+/*
 		List<Reserva> reservas=reservaService.findAll();
 		System.out.println(reservas);
 		Reserva r=reservaService.findById("67b484fd1e8726427b3b727e");
-		System.out.println(r);
-		/*
+		System.out.println(r);*/
+
 		List<String> tematicas=new ArrayList<>();
 		tematicas.add("Terror");
 		tematicas.add("Inteligencia");
-		Sala sala=new Sala("La Casa del Terro",2,6,tematicas);
-		salaService.insertarSala(sala);*/
+		Sala sala=new Sala("La Casa3",1,4,tematicas);
+		salaService.insertarSala(sala);
 
-
-
+		/*
 		Fecha fecha1=new Fecha(20,16);
 		Contacto contacto1=new Contacto("Sergio2",6677);
 		Reserva reserva=new Reserva("La Casa del Terro",fecha1,contacto1,55);
-		reservaService.insertarReserva(reserva);
+		reservaService.insertarReserva(reserva);*/
 
 
 		/*Sala s=salaService.buscaPorNombre("La Casa del Terro");
