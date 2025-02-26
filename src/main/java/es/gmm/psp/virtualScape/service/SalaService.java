@@ -1,13 +1,19 @@
 package es.gmm.psp.virtualScape.service;
 
+import es.gmm.psp.virtualScape.model.ConsultaMasReservas;
+import es.gmm.psp.virtualScape.model.Reserva;
 import es.gmm.psp.virtualScape.model.Sala;
+import es.gmm.psp.virtualScape.repository.ReservaRepository;
 import es.gmm.psp.virtualScape.repository.SalaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SalaService {
@@ -15,7 +21,8 @@ public class SalaService {
     private static final Logger log = LoggerFactory.getLogger(SalaService.class);
     @Autowired
     private SalaRepository salaRepository;
-
+    @Autowired
+    private ReservaRepository reservaRepository;
     public void insertarSala(Sala s){
         log.info("insertando sala...");
         if (s.getCapacidadMin()>= 1 && s.getCapacidadMax() <=8) {
@@ -77,5 +84,26 @@ public class SalaService {
     }
     public List<Sala> top2SalasConMasReservas() {
         return salaRepository.findTop2ByOrderByReservaAsc();
+    }
+    public List<ConsultaMasReservas> obtenerSalasMasReservadas() {
+        List<Reserva> reservas = reservaRepository.findAll();
+        Map<String, Integer> conteoReservas = new HashMap<>();
+
+        for (Reserva reserva : reservas) {
+            String nombreSala = reserva.getNombreSala();
+            conteoReservas.put(nombreSala, conteoReservas.getOrDefault(nombreSala, 0) + 1);
+        }
+        List<Map.Entry<String, Integer>> listaOrdenada = new ArrayList<>(conteoReservas.entrySet());
+        listaOrdenada.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));
+
+        List<ConsultaMasReservas> resultado = new ArrayList<>();
+        int limite = Math.min(listaOrdenada.size(), 2);
+
+        for (int i = 0; i < limite; i++) {
+            Map.Entry<String, Integer> entrada = listaOrdenada.get(i);
+            resultado.add(new ConsultaMasReservas(entrada.getKey(), entrada.getValue()));
+        }
+
+        return resultado;
     }
 }

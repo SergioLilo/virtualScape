@@ -4,6 +4,9 @@ import es.gmm.psp.virtualScape.model.*;
 import es.gmm.psp.virtualScape.service.ReservaService;
 import es.gmm.psp.virtualScape.service.SalaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/virtual-escape/consultas")
@@ -26,6 +28,7 @@ public class ApiConsultas {
 
     @Autowired
     private SalaService salaService;
+
     // GET /reservas/dia/{numDia}
     @Operation(summary = "Obtener reservas por día", description = "Devuelve las reservas de un día específico con la información de la sala")
     @ApiResponses(value = {
@@ -65,15 +68,20 @@ public class ApiConsultas {
 
         return ResponseEntity.ok(salas);
     }
-    @GetMapping("/salas/mas-reservadas")
-    public ResponseEntity<List<Sala>> getSalasMasReservadas() {
-        List<Sala> salasMasReservadas = salaService.top2SalasConMasReservas();
 
-        if (salasMasReservadas.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @Operation(summary = "Listar salas con más reservas", description = "Devuelve las salas con mayor cantidad de reservas realizadas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Datos encontrados",
+                    content = @Content(array = @ArraySchema(schema = @Schema(example = "[{\"id\": \"1\", \"nombre\": \"Sala A\", \"capacidad\": 5}, {\"id\": \"2\", \"nombre\": \"Sala B\", \"capacidad\": 3}]")))),
+            @ApiResponse(responseCode = "204", description = "No se encontraron datos", content = @Content(schema = @Schema(example = "{\"exito\": false, \"mensaje\": \"No se encontraron datos\", \"idGenerado\": null}")))
+    })
+    @GetMapping("/mas-reservadas")
+    public ResponseEntity<List<ConsultaMasReservas>> getSalasMasReservadas() {
+        List<ConsultaMasReservas> resultado = salaService.obtenerSalasMasReservadas();
+        if (resultado == null || resultado.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
-
-        return ResponseEntity.ok(salasMasReservadas);
+        return ResponseEntity.ok(resultado);
     }
 
 }
